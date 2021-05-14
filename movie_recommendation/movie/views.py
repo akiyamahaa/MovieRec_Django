@@ -28,11 +28,12 @@ def index(request):
   return render(request,'index.html')
 
 def pagination(request,query,page_number):
+    print('page numberrr', page_number)
+    page_number = int(page_number) + 1
     url = 'http://www.omdbapi.com/?apikey=266c5967&s=' + query + '&page=' + str(page_number)
     response = requests.get(url)
     movie_data = response.json()
-    page_number = int(page_number) + 10
-
+    print('page numberrr', page_number)
     context = {
       'query': query,
       'movie_data': movie_data,

@@ -24,8 +24,8 @@
                   <div class="row valign-wrapper">
                     <div class="col s4 center-align">
 
-                    {% if review.user.profile.picture %}
-                      <img src="{{ review.user.profile.picture.url }}" alt="" class="circle responsive-img">
+                    {% if review.user.profile.avatar %}
+                      <img src="{{ review.user.profile.avatar.url }}" alt="" class="circle responsive-img">
                     {% else %}
                       <img src="{% static 'img/no_avatar.jpg' %}" alt="" class="circle responsive-img">
                     {% endif %}
@@ -83,8 +83,8 @@
               <li class="collection-item avatar">
 
 
-                    {% if comment.user.profile.picture %}
-                      <img src="{{ comment.user.profile.picture.url }}" alt="" class="circle responsive-img">
+                    {% if comment.user.profile.avatar %}
+                      <img src="{{ comment.user.profile.avatar.url }}" alt="" class="circle responsive-img">
                     {% else %}
                       <img src="{% static 'img/no_avatar.jpg' %}" alt="" class="circle responsive-img">
                     {% endif %}

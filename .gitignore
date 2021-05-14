@@ -1,3 +1,9 @@
 venv
-*.db.sqlite3
+db.sqlite3*
 .vscode
+__pycache__ 
+*/__pycache__/*
+**/__pycache__/*
+
+movie/migrations/*
+.DS_Store

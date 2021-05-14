@@ -1,53 +1,45 @@
 {% extends 'base.html' %} {% load static %} {% block content %}
 
 <div class="row center-align">
-  <form
-    method="post"
-    enctype="multipart/form-data"
-    class="col s12"
-    role="form"
-    action=""
-  >
+  <form method="post" class="col s12" role="form" action="">
     {% csrf_token %}
-    <h3>Edit Profile</h3>
+    <h3>Create an account</h3>
     <div class="row">
-      <div class="file-field input-field col s12">
-        <div class="btn">
-          <span>File</span>
-          {{ form.avatar }}
-        </div>
-        <div class="file-path-wrapper">
-          <input class="file-path validate" type="text" />
-        </div>
+      <div class="input-field col s12">
+        {{ form.username }}
+        <label for="username">Username</label>
       </div>
     </div>
     <div class="row">
-      <div class="input-field col s6">
-        <i class="material-icons prefix">account_circle</i>
+      <div class="input-field col s12">
+        {{ form.email }}
+        <label for="email">Email</label>
+      </div>
+    </div>
+    <div class="row">
+      <div class="input-field col s12">
         {{ form.first_name }}
         <label for="first_name">First name</label>
       </div>
     </div>
     <div class="row">
-      <div class="input-field col s6">
-        <i class="material-icons prefix">account_circle</i>
+      <div class="input-field col s12">
         {{ form.last_name }}
         <label for="last_name">Last name</label>
       </div>
     </div>
     <div class="row">
       <div class="input-field col s12">
-        {{ form.url }}
-        <label for="url">URL</label>
+        {{ form.password }}
+        <label for="password">Password</label>
       </div>
     </div>
     <div class="row">
       <div class="input-field col s12">
-        {{ form.profile_info }}
-        <label for="profile_info">About</label>
+        {{ form.confirm_password }}
+        <label for="confirm_password">Re-type password</label>
       </div>
     </div>
-
     {% if form.errors %}
     <div class="row">
       <div class="col s12">
@@ -56,7 +48,7 @@
     </div>
     {% endif %}
     <button type="submit" name="action" class="waves-effect waves-light btn">
-      <i class="material-icons left">send</i>Update
+      <i class="material-icons left">send</i>Create account
     </button>
   </form>
 </div>

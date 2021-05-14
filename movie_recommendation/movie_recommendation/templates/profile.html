@@ -13,8 +13,8 @@
             <div class="card-image">
               <img src="{% static 'img/icons/banner.jpg' %}">
 
-              {% if profile.picture %}
-                <img id="img-custom-circle-actor" src="{{ profile.picture.url }}">
+              {% if profile.avatar %}
+                <img id="img-custom-circle-actor" src="{{ profile.avatar.url }}">
               {% else %}
                 <img id="img-custom-circle-actor" src="{% static 'img/no_avatar.jpg' %}">
               {% endif %}
@@ -29,7 +29,6 @@
               <div class="col s12 m4">
                   <ul class="collection with-header">
                     <li class="collection-header"><h5>User information</h5></li>
-                    <li class="collection-item">Location: <b>{{ profile.location }}</b></li>
                     <li class="collection-item">Link: <a><b>{{ profile.url }}</b></a></li>
                     <li class="collection-item">Bio:
                       {{ profile.profile_info }}

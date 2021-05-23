@@ -30,14 +30,20 @@
               </li>
               <li class="collection-item">Bio: {{ profile.profile_info }}</li>
             </ul>
-
-            {% if user.is_authenticated and user == profile.user %}
-            <a href="{% url 'edit-profile' %}" class="btn">Edit Profile</a>
-            {% endif %}
           </div>
-
           <div class="col s12 m8">
-            <ul class="collection"></ul>
+            <ul class="collection">
+              <li class="collection-item avatar">
+                <i class="material-icons circle orange">rate_review</i>
+                <span class="title">Movies Reviewed</span>
+                <p class="center-align"><b>{{ m_reviewed_count }}</b></p>
+                <a
+                  href="{% url 'profile-reviewed-list' profile.user.username %}"
+                  class="secondary-content"
+                  ><b>Show list</b></a
+                >
+              </li>
+            </ul>
           </div>
         </div>
       </div>
@@ -49,43 +55,33 @@
   <div class="divider"></div>
 
   <div class="row">
-    {% if list_title == 'Reviewed' %} {% for review in movie_data %}
+    {% for movie in movie_data %}
     <div class="col s12 m4">
-      <div class="card">
-        <div class="card-image">
-          <a
-            href="{% url 'user-review' review.user.username review.movie.imdbID %}"
-            ><img src="{{ review.movie.Poster.url }}"
+      <div class="card card-style">
+        <div class="card-image-movie">
+          {% if movie.Poster == 'N/A' %}
+          <a href="{% url 'movie-details' movie.imdbID%}"
+            ><img
+              class="card-image-movie"
+              src="{% static 'img/no_poster.jpg' %}"
           /></a>
-        </div>
-        <div class="card-content">
-          <span class="card-title"><b>{{ review.movie.Title }}</b></span>
-          <span class="right"
-            ><i class="material-icons">date_range</i>{{ review.movie.Year
-            }}</span
-          >
-          <p><b>{{ review.movie.Type }}</b></p>
-        </div>
-      </div>
-    </div>
-    {% endfor %} {% else %} {% for movie in movie_data %}
-    <div class="col s12 m4">
-      <div class="card">
-        <div class="card-image">
-          <a href="{% url 'movie-details' movie.imdbID %}"
-            ><img src="{{ movie.Poster.url }}"
+          {% else %}
+          <a href="{% url 'movie-details' movie.imdbID%}"
+            ><img class="card-image-movie" src="{{ movie.Poster }}"
           /></a>
+          {% endif %}
         </div>
-        <div class="card-content">
+        <div class="card-content-home-page">
           <span class="card-title"><b>{{ movie.Title }}</b></span>
-          <span class="right"
+          <span style="display: flex; align-items: center"
             ><i class="material-icons">date_range</i>{{ movie.Year }}</span
           >
-          <p><b>{{ movie.Type }}</b></p>
+          <span class="card-title"><b>User-rated : {{ movie.user_rated }}</b></span>
+
         </div>
       </div>
     </div>
-    {% endfor %} {% endif %}
+    {% endfor %}
   </div>
 
   {% if movie_data.has_previous %}

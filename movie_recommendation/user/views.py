@@ -4,9 +4,11 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import update_session_auth_hash
 from django.template import loader
 from django.http import HttpResponse
+from django.core.paginator import Paginator
 
 from user.forms import SignupForm, ChangePasswordForm, EditProfileForm
 from user.models import Profile
+from movie.models import ReviewRating, Movie
 
 # Create your views here.
 
@@ -84,11 +86,55 @@ def EditProfile(request):
 def UserProfile(request,username):
 	user = get_object_or_404(User,username=username)
 	profile = Profile.objects.get(user=user)
+	m_reviewed_count = ReviewRating.objects.filter(user=user).count()
+
 
 	context ={
-		'profile': profile
+		'profile': profile,
+		'm_reviewed_count': m_reviewed_count,
 	}
 
 	template = loader.get_template('profile.html')
 
 	return HttpResponse(template.render(context,request))
+
+def UserListReviewed(request,username):
+	user = get_object_or_404(User,username=username)
+	profile = Profile.objects.get(user=user)
+
+	m_reviewed_count = ReviewRating.objects.filter(user=user).count()
+	movie_reviewed_list = []
+	movies = ReviewRating.objects.filter(user=user)
+
+	for movie in movies:
+		if Movie.objects.filter(imdbID=movie.movie_id).exists():
+			movie_data = Movie.objects.get(imdbID=movie.movie_id)
+			movie_obj = {
+				'Title': movie_data,
+				'Poster': movie_data.Poster.url,
+				'Year': movie_data.Year,
+				'imdbID': movie.movie_id,
+				'user_rated': movie.rate
+			}
+			movie_reviewed_list.append(movie_obj)
+		else:
+			url = 'http://www.omdbapi.com/?apikey=266c5967&i=' + movie.movie_id
+			response = requests.get(url)
+			movie_data = response.json()
+			movie_data.user_rated = movie.rate
+			movie_reviewed_list.append(movie_data)
+
+	paginator = Paginator(movie_reviewed_list, 8)
+	page_number = request.GET.get('page')
+	movie_data = paginator.get_page(page_number)
+	context ={
+		'profile': profile,
+		'm_reviewed_count': m_reviewed_count,
+		'movie_data': movie_data,
+		'list_title': 'Movie Reviewed',
+	}
+
+	template = loader.get_template('profile.html')
+
+	return HttpResponse(template.render(context, request))
+

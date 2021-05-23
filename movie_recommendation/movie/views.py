@@ -199,7 +199,14 @@ def Rate(request, imdb_id):
   user_count = len(ReviewRating.objects.values('idx_user').annotate(Count('idx_user',distinct=True)))
   movie_count = len(ReviewRating.objects.values('idx_movie').annotate(Count('idx_movie',distinct=True)))
 
+  print(len(user_exist),'user-exist')
+  print(len(movie_exist),'movie_exist')
+  
+
   if request.method == "POST":
+    # Delete User rating exist
+    if len(user_exist) > 0 and len(movie_exist) > 0:
+      ReviewRating.objects.filter(user=user,movie_id=imdb_id).delete()
     form = RateForm(request.POST)
     if form.is_valid():
       rate = form.save(commit=False)
@@ -213,9 +220,7 @@ def Rate(request, imdb_id):
         rate.idx_movie = int(movie_count)
       rate.user = user
       rate.movie_id = imdb_id
-      # Delete User rating exist
-      if len(user_exist) & len(movie_exist):
-        ReviewRating.objects.filter(user=user,movie_id=imdb_id).delete()
+
       rate.save()
       return HttpResponseRedirect(reverse('movie-details', args=[imdb_id]))
   else:

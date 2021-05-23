@@ -1,13 +1,22 @@
+from requests.api import request
+from movie.models import Review
+from movie.models import ReviewRating
+import csv,io
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import  loader
 from django.utils.text import slugify
+from django.urls import reverse
+from django.db.models import Count
 
 from movie.models import Movie, Genre, Rating,Actor
+from movie.forms import RateForm
 
 import requests
 # Create your views here.
+from django.contrib.auth.decorators import login_required
 
+@login_required(login_url='/account/login')
 def index(request):
   query =request.GET.get('q')
 
@@ -50,9 +59,9 @@ def movie_details(request,imdb_id):
     exists_db = True
 
     context = {
-			'movie_data': movie_data,
-			'exists_db': exists_db,
-		}
+      'movie_data': movie_data,
+      'exists_db': exists_db,
+    }
 
   else:
     url = 'http://www.omdbapi.com/?apikey=266c5967&i=' + imdb_id
@@ -65,6 +74,7 @@ def movie_details(request,imdb_id):
 
     # For actor
     actor_list = [x.strip() for x in movie_data['Actors'].split(',')]
+    print(actor_list,'=========================')
     for actor in actor_list: 
       each_actor, created = Actor.objects.get_or_create(name=actor)
       actor_objs.append(each_actor)
@@ -135,9 +145,6 @@ def movie_details(request,imdb_id):
       each_movie.Actors.set(actor_objs)
       each_movie.Ratings.set(rating_objs)
     
-    for actor in actor_objs:
-      actor.movies.add(each_movie)
-      actor.save()
     
     each_movie.save()
     exists_db = False
@@ -150,3 +157,71 @@ def movie_details(request,imdb_id):
   template = loader.get_template('movie_details.html')
 
   return HttpResponse(template.render(context, request))
+
+def Rate(request, imdb_id):
+  movie = Movie.objects.get(imdbID=imdb_id)
+  user = request.user
+  user_exist = ReviewRating.objects.filter(user=user)
+  movie_exist = ReviewRating.objects.filter(movie_id=imdb_id)
+  user_count = len(ReviewRating.objects.values('idx_user').annotate(Count('idx_user',distinct=True)))
+  movie_count = len(ReviewRating.objects.values('idx_movie').annotate(Count('idx_movie',distinct=True)))
+
+  if request.method == "POST":
+    form = RateForm(request.POST)
+    if form.is_valid():
+      rate = form.save(commit=False)
+      if len(user_exist):
+        rate.idx_user = user_exist[0].idx_user
+      else:
+        rate.idx_user = int(user_count)
+      if len(movie_exist):
+        rate.idx_movie = movie_exist[0].idx_movie
+      else: 
+        rate.idx_movie = int(movie_count)
+      rate.user = user
+      rate.movie_id = imdb_id
+      # Delete User rating exist
+      if len(user_exist) & len(movie_exist):
+        ReviewRating.objects.filter(user=user,movie_id=imdb_id).delete()
+      rate.save()
+      return HttpResponseRedirect(reverse('movie-details', args=[imdb_id]))
+  else:
+    form = RateForm()
+
+  template = loader.get_template('rate.html')
+
+  context = {
+    'form': form, 
+    'movie': movie,
+  }
+
+  return HttpResponse(template.render(context, request))
+
+def rating_upload(request):
+  template = loader.get_template('rating_upload.html')
+  prompt= {
+    'order': 'order of the CSV is idx_user,idx_movie,rating,user,movie_id'
+  }
+
+  if request.method == "GET":
+    return HttpResponse(template.render(prompt,request))
+  
+  csv_file = request.FILES['file']
+
+  if not csv_file.name.endswith('.csv'):
+    messages.error(request,'This is not csv file')
+  
+  data_set = csv_file.read().decode('UTF_8')
+  io_string = io.StringIO(data_set)
+  next(io_string)
+  for column in csv.reader(io_string,delimiter=','):
+    _,created = ReviewRating.objects.update_or_create(
+      idx_user = column[0],
+      idx_movie = column[1],
+      rate = column[2],
+      user = column[3],
+      movie_id = column[4]
+    )
+  context = {}
+  return HttpResponse(template.render(context, request))
+

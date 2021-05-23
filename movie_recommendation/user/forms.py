@@ -51,7 +51,7 @@ class SignupForm(forms.ModelForm):
 
 class ChangePasswordForm(forms.ModelForm):
 	id = forms.CharField(widget=forms.HiddenInput())
-	curr_password = forms.CharField(widget=forms.PasswordInput(), label="Old password", required=True)
+	curr_password = forms.CharField(widget=forms.PasswordInput(), label="Curr password", required=True)
 	new_password = forms.CharField(widget=forms.PasswordInput(), label="New password", required=True)
 	confirm_password = forms.CharField(widget=forms.PasswordInput(), label="Confirm new password", required=True)
 
@@ -78,9 +78,8 @@ class EditProfileForm(forms.ModelForm):
 	avatar = forms.ImageField(required=False)
 	first_name = forms.CharField(widget=forms.TextInput(), max_length=50, required=False)
 	last_name = forms.CharField(widget=forms.TextInput(), max_length=50, required=False)
-	url = forms.CharField(widget=forms.TextInput(), max_length=100, required=False)
 	profile_info = forms.CharField(widget=forms.TextInput(), max_length=150, required=False)
 
 	class Meta:
 		model = Profile
-		fields = ('avatar', 'first_name', 'last_name', 'url', 'profile_info')
+		fields = ('avatar', 'first_name', 'last_name', 'profile_info')

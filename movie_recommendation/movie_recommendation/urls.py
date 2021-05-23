@@ -13,14 +13,19 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from movie.views import rating_upload
 from django.contrib import admin
 from django.urls import path, include
 
 from django.conf import settings
 from django.conf.urls.static import static
 
+from user.views import UserProfile
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('movie/',include('movie.urls')),
     path('account/',include('user.urls')),  
+    path('profile/<username>',UserProfile,name='profile'),
+    path('upload-csv/',rating_upload,name='rating_upload')
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

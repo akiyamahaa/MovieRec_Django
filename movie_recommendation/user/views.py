@@ -1,7 +1,9 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import update_session_auth_hash
+from django.template import loader
+from django.http import HttpResponse
 
 from user.forms import SignupForm, ChangePasswordForm, EditProfileForm
 from user.models import Profile
@@ -66,7 +68,6 @@ def EditProfile(request):
 			profile.avatar = form.cleaned_data.get('avatar')
 			profile.first_name = form.cleaned_data.get('first_name')
 			profile.last_name = form.cleaned_data.get('last_name')
-			profile.url = form.cleaned_data.get('url')
 			profile.profile_info = form.cleaned_data.get('profile_info')
 			profile.save()
 			return redirect('index')
@@ -78,3 +79,16 @@ def EditProfile(request):
 	}
 
 	return render(request, 'edit_profile.html', context)
+
+@login_required
+def UserProfile(request,username):
+	user = get_object_or_404(User,username=username)
+	profile = Profile.objects.get(user=user)
+
+	context ={
+		'profile': profile
+	}
+
+	template = loader.get_template('profile.html')
+
+	return HttpResponse(template.render(context,request))

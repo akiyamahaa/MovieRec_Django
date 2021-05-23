@@ -16,7 +16,31 @@
 
 
 <!-- Dropdown Structure -->
+<ul id="dropdown1" class="dropdown-content">
+  {% if user.is_authenticated %}
+    <li><a href="{% url 'profile' user.username %}">Profile</a></li>
+    <li><a href="{% url 'change-password' %}">Change Password</a></li>
+    <li><a href="{% url 'edit-profile' %}">Edit Profile</a></li>
+    <li class="divider"></li>
+    <li><a href="{% url 'logout' %}">Log out</a></li>
+  {% endif %}
+</ul> 
+<nav class="light-blue">
+  <div class="container nav-wrapper">
+    <a href="{% url 'index' %}" class="brand-logo">HomePage</a>
+    <ul class="right hide-on-med-and-down">
+      <!-- Dropdown Trigger -->
+    {% if user.is_authenticated %}
+      <li><a class="dropdown-trigger" href="#!" data-target="dropdown1">{{ user.username }}<i class="material-icons right">arrow_drop_down</i></a>
+    {% else %}
+      <li><a href="{% url 'login' %}">Please sign in</a></li>
+    {% endif %}
 
+
+      </li>
+    </ul>
+  </div>
+</nav>
         
 
 {% block banner %}

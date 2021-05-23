@@ -72,8 +72,9 @@ footer.page-footer {
 .card-style {
   height: auto;
 }
-.card-image {
+.card-image-movie {
   height: 400px;
+  width:100%
 }
 .card-content-home-page {
   padding: 0px !important;

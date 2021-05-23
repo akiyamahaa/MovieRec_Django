@@ -5,6 +5,8 @@ from io import BytesIO
 from django.core import files
 import requests
 
+from django.contrib.auth.models import User
+
 # Create your models here.
 class Actor(models.Model):
   name = models.CharField(max_length=100, unique=True)
@@ -82,4 +84,34 @@ class Movie(models.Model):
       self.Poster.save(file_name, files.File(pb), save=False)
     
     return super().save(*args,**kwargs)
+
+RATE_CHOICES = [
+	(1, '1 - Trash'),
+	(2, '2 - Horrible'),
+	(3, '3 - Terrible'),
+	(4, '4 - Bad'),
+	(5, '5 - OK'),
+	(6, '6 - Watchable'),
+	(7, '7 - Good'),
+	(8, '8 - Very Good'),
+	(9, '9 - Perfect'),
+	(10, '10 - Master Piece'), 
+]
+
+class Review(models.Model):
+  user = models.ForeignKey(User,on_delete=models.CASCADE)
+  movie = models.ForeignKey(Movie, on_delete=models.CASCADE)
+  rate = models.PositiveSmallIntegerField(choices=RATE_CHOICES)
+  date = models.DateTimeField(auto_now_add=True)
+  
+  def __str__(self):
+    return self.user.username
+
+class ReviewRating(models.Model):
+  idx_user = models.CharField(max_length=100,blank=True,null=True)
+  idx_movie = models.CharField(max_length=100,blank=True,null=True)
+  rate = models.PositiveSmallIntegerField(choices=RATE_CHOICES)
+  user = models.CharField(User,max_length=100,blank=True,null=True)
+  movie_id = models.CharField(Movie,max_length=100,blank=True, null=True)
+
 

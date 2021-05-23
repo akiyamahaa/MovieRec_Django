@@ -55,7 +55,10 @@
           <div class='text-style'>imdb Votes: <b>{{ movie_data.imdbVotes }}</b></div>
           <div class='text-style'>imdb ID: <b>{{ movie_data.imdbID }}</b></div>
           <div class='text-style'>Production: <b>{{ movie_data.Production }}</b></div>
-
+          
+          <br>
+          <a href="{% url 'rate-movie' movie_data.imdbID %}" class="waves-effect waves-light btn"><i class="material-icons left">star</i>Rate</a>
+          
         </div>
       </div>
     </div>
@@ -129,33 +132,33 @@
 <div class="divider"></div>
 
 
-<!-- <div class="row">
-            <div class="col s12 m12">
-              <div class="card">
-                <div class="-moviedetails">
-                 <ul class="collection">
+<div class="row">
+  <div class="col s12 m12">
+    <div class="card">
+      <div class="-moviedetails">
+        <ul class="collection">
 
-                  {% for review in reviews %}
-                    <li class="collection-item avatar">
+        {% for review in reviews %}
+          <li class="collection-item avatar">
 
-                    {% if review.user.profile.picture %}
-                      <img src="{{ review.user.profile.picture.url }}" alt="" class="circle">
-                    {% else %}
-                      <img src="{% static 'img/no_avatar.jpg' %}" alt="" class="circle">
-                    {% endif %}
+          {% if review.user.profile.picture %}
+            <img src="{{ review.user.profile.picture.url }}" alt="" class="circle">
+          {% else %}
+            <img src="{% static 'img/no_avatar.jpg' %}" alt="" class="circle">
+          {% endif %}
 
-                      <span class="title"><b>{{ review.user.first_name }} {{ review.user.last_name }}</b></span>
-                      <p>@{{ review.user.username }}</p>
-                      <p>{{ review.date }}</p>
-                      <a href="{% url 'user-review' review.user.username movie_data.imdbID %}" class="secondary-content"><i class="material-icons">grade</i>{{ review.rate }} / 10</a>
-                    </li>
-                  {% endfor %}
+            <span class="title"><b>{{ review.user.first_name }} {{ review.user.last_name }}</b></span>
+            <p>@{{ review.user.username }}</p>
+            <p>{{ review.date }}</p>
+            <a href="{% url 'user-review' review.user.username movie_data.imdbID %}" class="secondary-content"><i class="material-icons">grade</i>{{ review.rate }} / 10</a>
+          </li>
+        {% endfor %}
 
-                </ul>
-                </div>
-              </div>
-            </div>
-          </div> -->
+      </ul>
+      </div>
+    </div>
+  </div>
+</div>
 
 
 {% endblock %}

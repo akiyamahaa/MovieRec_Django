@@ -8,18 +8,30 @@ from django.template import  loader
 from django.utils.text import slugify
 from django.urls import reverse
 from django.db.models import Count
+from django.conf import settings
 
 from movie.models import Movie, Genre, Rating,Actor
 from movie.forms import RateForm
 
 import requests
+import random
 # Create your views here.
 from django.contrib.auth.decorators import login_required
+
+def get_popular_movie_id():
+  top_movie_path = settings.DATA_ROOT + '/top_movie.csv'
+  top_movie_id = []
+  with open(top_movie_path) as csv_file:
+    csv_reader = csv.reader(csv_file)
+    for row in csv_reader:
+      top_movie_id.append(row[0])
+  
+  return random.choices(top_movie_id,k=8)
+
 
 @login_required(login_url='/account/login')
 def index(request):
   query =request.GET.get('q')
-
   if query:
     url = 'http://www.omdbapi.com/?apikey=266c5967&s=' + query
     response = requests.get(url)
@@ -33,16 +45,38 @@ def index(request):
 
     template = loader.get_template('search_results.html')
     return HttpResponse(template.render(context,request))
+  
+  top_movie_arr = get_popular_movie_id()
+  top_movie_data = []
+  for movie_id in top_movie_arr:
+    if Movie.objects.filter(imdbID=movie_id).exists():
+      movie_data = Movie.objects.get(imdbID=movie_id)
+      movie_obj = {
+        Title: movie_data.Title,
+        Poster: movie_data.Poster.url,
+        Year: movie_data.Year
+      }
+      top_movie_data.append(movie_obj)
+    else:
+      url = 'http://www.omdbapi.com/?apikey=266c5967&i=' + movie_id
+      response = requests.get(url)
+      movie_data = response.json()
+      top_movie_data.append(movie_data)
+  
+  template = loader.get_template('index.html')
 
-  return render(request,'index.html')
+  context = {
+    'movie_data': top_movie_data
+  }
+
+  return HttpResponse(template.render(context,request))
+
 
 def pagination(request,query,page_number):
-    print('page numberrr', page_number)
     page_number = int(page_number) + 1
     url = 'http://www.omdbapi.com/?apikey=266c5967&s=' + query + '&page=' + str(page_number)
     response = requests.get(url)
     movie_data = response.json()
-    print('page numberrr', page_number)
     context = {
       'query': query,
       'movie_data': movie_data,
@@ -74,7 +108,6 @@ def movie_details(request,imdb_id):
 
     # For actor
     actor_list = [x.strip() for x in movie_data['Actors'].split(',')]
-    print(actor_list,'=========================')
     for actor in actor_list: 
       each_actor, created = Actor.objects.get_or_create(name=actor)
       actor_objs.append(each_actor)
@@ -224,4 +257,29 @@ def rating_upload(request):
     )
   context = {}
   return HttpResponse(template.render(context, request))
+
+def get_my_recommendation(request):
+  my_recommendation = []
+  for movie_id in my_recommendation:
+    if Movie.objects.filter(imdbID=movie_id).exists():
+      movie_data = Movie.objects.get(imdbID=movie_id)
+      movie_obj = {
+        Title: movie_data.Title,
+        Poster: movie_data.Poster.url,
+        Year: movie_data.Year
+      }
+      top_movie_data.append(movie_obj)
+    else:
+      url = 'http://www.omdbapi.com/?apikey=266c5967&i=' + movie_id
+      response = requests.get(url)
+      movie_data = response.json()
+      top_movie_data.append(movie_data)
+  
+  template = loader.get_template('my_recommendation.html')
+
+  context = {
+    'movie_data': top_movie_data
+  }
+
+  return HttpResponse(template.render(context,request))  
 

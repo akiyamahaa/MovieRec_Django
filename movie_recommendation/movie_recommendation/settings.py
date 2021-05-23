@@ -128,6 +128,8 @@ STATICFILES_DIRS= [
 MEDIA_URL = '/media/'
 MEDIA_ROOT= os.path.join(BASE_DIR,'media')
 
+DATA_ROOT = os.path.join(BASE_DIR,'imdb')
+
 LOGIN_REDIRECT_URL = 'index'
 LOGOUT_REDIRECT_URL = 'login'
 

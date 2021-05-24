@@ -1,5 +1,4 @@
 from requests.api import request
-from movie.models import Review
 from movie.models import ReviewRating
 import csv,io
 from django.shortcuts import render
@@ -29,7 +28,6 @@ def get_popular_movie_id():
   return random.choices(top_movie_id,k=8)
 
 
-@login_required(login_url='/account/login')
 def index(request):
   query =request.GET.get('q')
   if query:
@@ -52,9 +50,9 @@ def index(request):
     if Movie.objects.filter(imdbID=movie_id).exists():
       movie_data = Movie.objects.get(imdbID=movie_id)
       movie_obj = {
-        Title: movie_data.Title,
-        Poster: movie_data.Poster.url,
-        Year: movie_data.Year
+        'Title': movie_data.Title,
+        'Poster': movie_data.Poster.url,
+        'Year': movie_data.Year
       }
       top_movie_data.append(movie_obj)
     else:
@@ -191,6 +189,7 @@ def movie_details(request,imdb_id):
 
   return HttpResponse(template.render(context, request))
 
+@login_required(login_url='/account/login')
 def Rate(request, imdb_id):
   movie = Movie.objects.get(imdbID=imdb_id)
   user = request.user
@@ -263,15 +262,18 @@ def rating_upload(request):
   context = {}
   return HttpResponse(template.render(context, request))
 
+
+@login_required(login_url='/account/login')
 def get_my_recommendation(request):
+  top_movie_data = []
   my_recommendation = []
   for movie_id in my_recommendation:
     if Movie.objects.filter(imdbID=movie_id).exists():
       movie_data = Movie.objects.get(imdbID=movie_id)
       movie_obj = {
-        Title: movie_data.Title,
-        Poster: movie_data.Poster.url,
-        Year: movie_data.Year
+        'Title': movie_data.Title,
+        'Poster': movie_data.Poster.url,
+        'Year': movie_data.Year
       }
       top_movie_data.append(movie_obj)
     else:

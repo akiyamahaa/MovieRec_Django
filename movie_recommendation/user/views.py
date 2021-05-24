@@ -98,6 +98,7 @@ def UserProfile(request,username):
 
 	return HttpResponse(template.render(context,request))
 
+@login_required
 def UserListReviewed(request,username):
 	user = get_object_or_404(User,username=username)
 	profile = Profile.objects.get(user=user)

@@ -7,4 +7,6 @@ __pycache__
 
 media
 movie/migrations/*
+user/migrations/*
+
 .DS_Store

@@ -17,11 +17,6 @@ class Actor(models.Model):
   def __str__(self):
     return self.name
 
-  def save(self, *args, **kwargs):
-    if not self.slug:
-      self.slug = slugify(self.name)
-    return super().save(*args,**kwargs)
-
 class Genre(models.Model):
   title = models.CharField(max_length=50)
   slug = models.SlugField(null=False,unique=True)
@@ -29,11 +24,6 @@ class Genre(models.Model):
   def __str__(self):
     return self.title
 
-  def save(self, *args, **kwargs):
-    if not self.slug:
-      self.title.replace(' ','')
-      self.slug = slugify(self.name)
-    return super().save(*args,**kwargs)
 
 class Rating(models.Model):
   source = models.CharField(max_length=50)
@@ -86,26 +76,17 @@ class Movie(models.Model):
     return super().save(*args,**kwargs)
 
 RATE_CHOICES = [
-	(1, '1 - Trash'),
-	(2, '2 - Horrible'),
-	(3, '3 - Terrible'),
-	(4, '4 - Bad'),
-	(5, '5 - OK'),
-	(6, '6 - Watchable'),
-	(7, '7 - Good'),
-	(8, '8 - Very Good'),
-	(9, '9 - Perfect'),
-	(10, '10 - Master Piece'), 
+	(1, '1'),
+	(2, '2'),
+	(3, '3'),
+	(4, '4'),
+	(5, '5'),
+	(6, '6'),
+	(7, '7'),
+	(8, '8'),
+	(9, '9'),
+	(10, '10'), 
 ]
-
-class Review(models.Model):
-  user = models.ForeignKey(User,on_delete=models.CASCADE)
-  movie = models.ForeignKey(Movie, on_delete=models.CASCADE)
-  rate = models.PositiveSmallIntegerField(choices=RATE_CHOICES)
-  date = models.DateTimeField(auto_now_add=True)
-  
-  def __str__(self):
-    return self.user.username
 
 class ReviewRating(models.Model):
   idx_user = models.CharField(max_length=100,blank=True,null=True)

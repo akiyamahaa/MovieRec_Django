@@ -70,9 +70,8 @@ def EditProfile(request):
 			profile.avatar = form.cleaned_data.get('avatar')
 			profile.first_name = form.cleaned_data.get('first_name')
 			profile.last_name = form.cleaned_data.get('last_name')
-			profile.profile_info = form.cleaned_data.get('profile_info')
 			profile.save()
-			return redirect('index')
+			return redirect('home_page')
 	else:
 		form = EditProfileForm()
 

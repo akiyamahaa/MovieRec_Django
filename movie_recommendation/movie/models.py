@@ -4,6 +4,7 @@ from django.utils.text import slugify
 from io import BytesIO
 from django.core import files
 import requests
+from django.urls import reverse
 
 from django.contrib.auth.models import User
 
@@ -17,12 +18,29 @@ class Actor(models.Model):
   def __str__(self):
     return self.name
 
+  def get_absolute_url(self):
+    return reverse('actors', args=[self.slug])
+
+  def save(self, *args, **kwargs):
+    if not self.slug:
+      self.slug = slugify(self.name)
+    return super().save(*args, **kwargs)
+
 class Genre(models.Model):
   title = models.CharField(max_length=50)
   slug = models.SlugField(null=False,unique=True)
   
   def __str__(self):
     return self.title
+
+  def get_absolute_url(self):
+    return reverse('genres', args=[self.slug])
+  
+  def save(self, *args, **kwargs):
+    if not self.slug:
+      self.title.replace(" ", "")
+      self.slug = slugify(self.title)
+    return super().save(*args, **kwargs)  
 
 
 class Rating(models.Model):

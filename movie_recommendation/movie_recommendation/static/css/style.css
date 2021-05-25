@@ -68,6 +68,13 @@ footer.page-footer {
   left: 35%;
   top: 20%;
 }
+
+/* base html */
+.header-style{
+  position: fixed;
+  z-index: 1000;
+}
+
 /* Search Results */
 .card-style {
   height: auto;

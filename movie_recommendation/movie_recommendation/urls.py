@@ -21,12 +21,15 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 from user.views import UserProfile, UserListReviewed
+from movie.views import get_my_recommendation, home_page
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('',home_page,name='home_page'),
     path('movie/',include('movie.urls')),
     path('account/',include('user.urls')),  
     path('profile/<username>',UserProfile,name='profile'),
     path('upload-csv/',rating_upload,name='rating_upload'),
     path('<username>/reviewed', UserListReviewed, name='profile-reviewed-list'),
+    path('recommendation',get_my_recommendation,name='my-recommendation')
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

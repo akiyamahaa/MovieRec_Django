@@ -20,14 +20,14 @@
   {% if user.is_authenticated %}
     <li><a href="{% url 'profile' user.username %}">Profile</a></li>
     <li><a href="{% url 'change-password' %}">Change Password</a></li>
-    <li><a href="{% url 'edit-profile' %}">Edit Profile</a></li>
+    <li><a href="{% url 'my-recommendation' %}">My Recommendation</a></li>
     <li class="divider"></li>
     <li><a href="{% url 'logout' %}">Log out</a></li>
   {% endif %}
 </ul> 
-<nav class="light-blue">
+<nav class="light-blue header-style">
   <div class="container nav-wrapper">
-    <a href="{% url 'index' %}" class="brand-logo">HomePage</a>
+    <a href="{% url 'home_page' %}" class="brand-logo">Home Page</a>
     <ul class="right hide-on-med-and-down">
       <!-- Dropdown Trigger -->
     {% if user.is_authenticated %}

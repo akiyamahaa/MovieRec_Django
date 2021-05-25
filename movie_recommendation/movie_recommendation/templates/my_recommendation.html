@@ -1,4 +1,6 @@
-{% extends 'base.html' %} {% load static %} {% block banner %}
+{% extends 'base.html' %} 
+{% load static %} 
+{% block banner %}
 <div id="index-banner">
   <div class="section no-pad-bot">
     <div class="container">
@@ -6,7 +8,8 @@
     </div>
   </div>
 </div>
-{% endblock %} {% block content %}
+{% endblock %} 
+{% block content %}
 <!--   Icon Section   -->
 <div class="row">
   {% for movie in movie_data %}
@@ -33,14 +36,6 @@
   </div>
   {% endfor %}
 
-  <div class="col s12 m12 center-align">
-    <a
-      href="{% url 'pagination' query page_number %}"
-      class="waves-effect waves-light btn"
-      ><i class="material-icons left">add</i>Load more</a
-    >
-    <div></div>
-  </div>
-</div>
 
+</div>
 {% endblock %}

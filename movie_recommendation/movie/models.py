@@ -11,7 +11,6 @@ from django.contrib.auth.models import User
 # Create your models here.
 class Actor(models.Model):
   name = models.CharField(max_length=100, unique=True)
-  picture = models.ImageField(blank=True)
   slug = models.SlugField(null=True,unique=True)
   movies = models.ManyToManyField('movie.Movie')
 

@@ -1,5 +1,6 @@
 from requests.api import request
-import csv, io
+import csv
+import io
 import numpy as np
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
@@ -15,6 +16,7 @@ import tensorflow as tf
 from movie.models import ReviewRating
 from movie.models import Movie, Genre, Rating, Actor
 from movie.forms import RateForm
+from user.models import Profile
 
 import requests
 import random
@@ -60,6 +62,7 @@ def home_page(request):
         else:
             url = "http://www.omdbapi.com/?apikey=266c5967&i=" + movie_id
             response = requests.get(url)
+            print('response=========',response)
             movie_data = response.json()
             top_movie_data.append(movie_data)
 
@@ -198,42 +201,41 @@ def movie_details(request, imdb_id):
 
     return HttpResponse(template.render(context, request))
 
+
 def search_by_genres(request, genre_slug):
-	genre = get_object_or_404(Genre, slug=genre_slug)
-	movies = Movie.objects.filter(Genre=genre)
+    genre = get_object_or_404(Genre, slug=genre_slug)
+    movies = Movie.objects.filter(Genre=genre)
 
-	paginator = Paginator(movies, 9)
-	page_number = request.GET.get('page')
-	movie_data = paginator.get_page(page_number)
+    paginator = Paginator(movies, 9)
+    page_number = request.GET.get('page')
+    movie_data = paginator.get_page(page_number)
 
-	context = {
-		'movie_data': movie_data,
-		'genre': genre,
-	}
+    context = {
+        'movie_data': movie_data,
+        'genre': genre,
+    }
 
+    template = loader.get_template('genre.html')
 
-	template = loader.get_template('genre.html')
+    return HttpResponse(template.render(context, request))
 
-	return HttpResponse(template.render(context, request))
 
 def search_by_actors(request, actor_slug):
-	actor = get_object_or_404(Actor, slug=actor_slug)
-	movies = Movie.objects.filter(Actors=actor)
+    actor = get_object_or_404(Actor, slug=actor_slug)
+    movies = Movie.objects.filter(Actors=actor)
 
-	paginator = Paginator(movies, 9)
-	page_number = request.GET.get('page')
-	movie_data = paginator.get_page(page_number)
+    paginator = Paginator(movies, 9)
+    page_number = request.GET.get('page')
+    movie_data = paginator.get_page(page_number)
 
-	context = {
-		'movie_data': movie_data,
-		'actor': actor,
-	}
+    context = {
+        'movie_data': movie_data,
+        'actor': actor,
+    }
 
+    template = loader.get_template('actor.html')
 
-	template = loader.get_template('actor.html')
-
-	return HttpResponse(template.render(context, request))
-
+    return HttpResponse(template.render(context, request))
 
 
 @login_required(login_url="/account/login")
@@ -286,6 +288,15 @@ def Rate(request, imdb_id):
     return HttpResponse(template.render(context, request))
 
 
+def addMoviesToWatch(request, imdb_id):
+    movie = Movie.objects.get(imdbID=imdb_id)
+    user = request.user
+    profile = Profile.objects.get(user=user)
+
+    profile.to_watch.add(movie)
+
+    return HttpResponseRedirect(reverse('movie-details', args=[imdb_id]))
+
 def rating_upload(request):
     template = loader.get_template("rating_upload.html")
     prompt = {"order": "order of the CSV is idx_user,idx_movie,rating,user,movie_id"}
@@ -316,41 +327,62 @@ def rating_upload(request):
     context = {}
     return HttpResponse(template.render(context, request))
 
+# RECOMMENDATION
+def get_raw_mid(mid):
+    return ReviewRating.objects.filter(idx_movie=mid)[0].movie_id
+
+def get_movie_rec_id_and_pred(predictions,k=10):
+    recommended_book_ids = (-predictions).argsort()[:k]
+    dict_raw_mid = {}
+    for mid in recommended_book_ids:
+        dict_raw_mid[get_raw_mid(mid)] = predictions[mid]
+    return dict_raw_mid
 
 @login_required(login_url="/account/login")
 def get_my_recommendation(request):
     model_path = settings.MODEL_ROOT + "/MF_keras.h5"
-    model = tf.keras.models.load_model(model_path)
+    model_keras = tf.keras.models.load_model(model_path)
     user = request.user
+    idx_user = int(ReviewRating.objects.filter(user=user)[0].idx_user)
+
+    glob_mean = 6.935751112458413
+
     top_movie_data = []
-    total_mid = ReviewRating.objects.values_list('idx_movie',flat=True).distinct()
+    
+    total_mid = ReviewRating.objects.values_list(
+        'idx_movie', flat=True).distinct()
     total_mid = np.array(total_mid)
-    mid_predicted = ReviewRating.objects.filter(user=user).values_list('idx_movie',flat=True).distinct()
+    mid_predicted = ReviewRating.objects.filter(
+        user=user).values_list('idx_movie', flat=True).distinct()
     mid_predicted = np.array(mid_predicted)
     mid_not_predicted = total_mid.copy()
     for i in mid_predicted:
-      mid_not_predicted = np.delete(mid_not_predicted, np.where(mid_not_predicted == i))
-    print(mid_predicted, type(mid_predicted), len(mid_predicted))
-    print(total_mid, type(total_mid), len(total_mid))
-    print(mid_not_predicted, type(mid_not_predicted), len(mid_not_predicted))
-    usr_arr = np.array([0 for i in range(len(mid_not_predicted))])
-    predictions = model.predict([usr_arr,mid_not_predicted])
-    print(predictions)
-    # my_recommendation = []
-    # for movie_id in my_recommendation:
-    #   if Movie.objects.filter(imdbID=movie_id).exists():
-    #     movie_data = Movie.objects.get(imdbID=movie_id)
-    #     movie_obj = {
-    #       'Title': movie_data.Title,
-    #       'Poster': movie_data.Poster.url,
-    #       'Year': movie_data.Year
-    #     }
-    #     top_movie_data.append(movie_obj)
-    #   else:
-    #     url = 'http://www.omdbapi.com/?apikey=266c5967&i=' + movie_id
-    #     response = requests.get(url)
-    #     movie_data = response.json()
-    #     top_movie_data.append(movie_data)
+        mid_not_predicted = np.delete(
+            mid_not_predicted, np.where(mid_not_predicted == i))
+    mid_not_predicted = mid_not_predicted.astype(int)
+    usr_arr = np.array([idx_user for i in range(len(mid_not_predicted))])
+    predictions = model_keras.predict([usr_arr, mid_not_predicted])
+    predictions += glob_mean
+    predictions = np.array([a[0] for a in predictions])
+    my_recommendation = get_movie_rec_id_and_pred(predictions)
+    
+    for movie_id,predict_score in my_recommendation.items():
+        if Movie.objects.filter(imdbID=movie_id).exists():
+            movie_data = Movie.objects.get(imdbID=movie_id)
+            movie_obj = {
+                'Title': movie_data.Title,
+                'Poster': movie_data.Poster.url,
+                'Year': movie_data.Year,
+                'predict_score':predict_score 
+            }
+            top_movie_data.append(movie_obj)
+        else:
+            url = 'http://www.omdbapi.com/?apikey=266c5967&i=' + movie_id
+            response = requests.get(url)
+            movie_data = response.json()
+            movie_data['predict_score'] = predict_score
+            top_movie_data.append(movie_data)
+            
 
     template = loader.get_template("my_recommendation.html")
 

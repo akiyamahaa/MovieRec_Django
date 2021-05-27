@@ -7,6 +7,8 @@ from PIL import Image
 from django.conf import settings
 import os
 
+from movie.models import Movie
+
 # Create your models here.
 
 def user_dir_path(instance,filename):
@@ -25,6 +27,7 @@ class Profile(models.Model):
   first_name = models.CharField(max_length=50,null=True,blank=True)
   last_name = models.CharField(max_length=50,null=True,blank=True)
   created = models.DateField(auto_now_add=True)
+  to_watch = models.ManyToManyField(Movie, related_name='towatch')
   avatar = models.ImageField(upload_to=user_dir_path,blank=True,null=True)
 
   def save(self,*arg,**kwargs):

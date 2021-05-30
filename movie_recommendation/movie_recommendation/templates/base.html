@@ -16,35 +16,41 @@
 
 
 <!-- Dropdown Structure -->
-<ul id="dropdown1" class="dropdown-content">
+<ul id="dropdown1" class="dropdown-content" style="margin-top: 64px !important;">
   {% if user.is_authenticated %}
-    <li><a href="{% url 'profile' user.username %}">Profile</a></li>
-    <li><a href="{% url 'change-password' %}">Change Password</a></li>
-    <li><a href="{% url 'my-recommendation' %}">My Recommendation</a></li>
+    <li><a class='header-text' href="{% url 'profile' user.username %}">Profile</a></li>
+    <li><a class='header-text' href="{% url 'change-password' %}">Change Password</a></li>
+    <li><a class='header-text' href="{% url 'my-recommendation' %}">My Recommendation</a></li>
     <li class="divider"></li>
-    <li><a href="{% url 'logout' %}">Log out</a></li>
+    <li><a class='header-text' href="{% url 'logout' %}">Log out</a></li>
   {% endif %}
 </ul> 
-<nav class="light-blue header-style">
-  <div class="container nav-wrapper">
-    <a href="{% url 'home_page' %}" class="brand-logo">Home Page</a>
-    <ul class="right hide-on-med-and-down">
-      <!-- Dropdown Trigger -->
-    {% if user.is_authenticated %}
-      <li><a class="dropdown-trigger" href="#!" data-target="dropdown1">{{ user.username }}<i class="material-icons right">arrow_drop_down</i></a>
-    {% else %}
-      <li><a href="{% url 'login' %}">Please sign in</a></li>
-    {% endif %}
-
-
-      </li>
-    </ul>
+<nav class="header-style">
+  <div class="container nav-wrapper" style="display: flex;justify-content: space-between;">
+    <div style="height: 100%;">
+      <img class="header-icon-style" src="{% static 'img/icons/icon-header.jpg' %}"/>
+      <a href="{% url 'home_page' %}" class="brand-logo header-text">Movie Review</a>
+    </div>
+    <div>
+      <ul class="right hide-on-med-and-down group-right">
+        <!-- Dropdown Trigger -->
+        {% if user.is_authenticated %}
+        <li><a class="header-text dropdown-trigger" href="#!" data-target="dropdown1">{{ user.username }}<i class="material-icons right">arrow_drop_down</i></a>
+          {% else %}
+          <li><a class='header-text' href="{% url 'login' %}">LOG IN</a></li>
+          <li><a class="waves-effect waves-light red sign-up-button" href="{% url 'signup' %}">SIGN UP</a></li>
+          {% endif %}
+        </li>
+      </ul>
+    </div>
   </div>
 </nav>
         
+<div style="margin-top:64px">
+  {% block banner %}
 
-{% block banner %}
-{% endblock %}
+  {% endblock %}
+</div>
 
   <div class="container">
     <div class="section">

@@ -1,33 +1,38 @@
-{% extends 'base.html' %}
-{% load static %}
-
-{% block banner %}
-  <div id="index-banner" class="parallax-container">
-    <div class="section no-pad-bot">
-      <div class="container">
-        <div class="row center">
-          <h1 class="header center teal-text text-lighten-2">Movie Recommendation</h1>
-              <div class="row">
-              <form class="col s12">
-                <div class="row">
-                  <div class="input-field col s12">
-                    <textarea typ="submit" id="textarea1" name="q" value="{{ request.GET.q }}" class="materialize-textarea"></textarea>
-                    <label for="textarea1">Search</label>
-                  </div>
-                  <button type="submit" name="action" class="waves-effect waves-light btn"><i class="material-icons left">search</i>Search</button>
-                </div>
-              </form>
+{% extends 'base.html' %} {% load static %} {% block banner %}
+<div id="index-banner" class="parallax-container">
+  <div class="section no-pad-bot">
+    <div class="container">
+      <div class="row center">
+        <div class="row">
+          <form class="col s12">
+            <div class="row">
+              <div class="input-field col s12">
+                <textarea
+                  typ="submit"
+                  id="textarea1"
+                  name="q"
+                  value="{{ request.GET.q }}"
+                  class="materialize-textarea input-style"
+                ></textarea>
+                <label for="textarea1">Search</label>
+              </div>
+              <button
+                type="submit"
+                name="action"
+                class="waves-effect waves-light btn"
+              >
+                <i class="material-icons left">search</i>Search
+              </button>
             </div>
+          </form>
         </div>
-        <br><br>
       </div>
+      <br /><br />
     </div>
-    <!-- <div class="parallax"><img src="{% static 'img/dark-banner.jpg' %}" alt="Unsplashed background img 1"></div> -->
   </div>
-{% endblock %}
-
-
-{% block content %}
+  <!-- <div class="parallax"><img src="{% static 'img/dark-banner.jpg' %}" alt="Unsplashed background img 1"></div> -->
+</div>
+{% endblock %} {% block content %}
 <!--   Icon Section   -->
 <div class="row">
   {% for movie in movie_data %}
@@ -53,7 +58,6 @@
     </div>
   </div>
   {% endfor %}
-
 </div>
 
 {% endblock %}

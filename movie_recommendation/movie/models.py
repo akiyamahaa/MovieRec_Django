@@ -106,6 +106,8 @@ RATE_CHOICES = [
 ]
 
 class ReviewRating(models.Model):
+  # idx_user = models.IntegerField(blank=True,null=True)
+  # idx_movie = models.IntegerField(blank=True,null=True)
   idx_user = models.CharField(max_length=100,blank=True,null=True)
   idx_movie = models.CharField(max_length=100,blank=True,null=True)
   rate = models.PositiveSmallIntegerField(choices=RATE_CHOICES)

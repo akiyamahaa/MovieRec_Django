@@ -48,23 +48,22 @@ def home_page(request):
         template = loader.get_template("search_results.html")
         return HttpResponse(template.render(context, request))
 
-    top_movie_arr = get_popular_movie_id()
     top_movie_data = []
-    for movie_id in top_movie_arr:
-        if Movie.objects.filter(imdbID=movie_id).exists():
-            movie_data = Movie.objects.get(imdbID=movie_id)
-            movie_obj = {
-                "Title": movie_data.Title,
-                "Poster": movie_data.Poster.url,
-                "Year": movie_data.Year,
-            }
-            top_movie_data.append(movie_obj)
-        else:
-            url = "http://www.omdbapi.com/?apikey=266c5967&i=" + movie_id
-            response = requests.get(url)
-            print('response=========',response)
-            movie_data = response.json()
-            top_movie_data.append(movie_data)
+    # top_movie_arr = get_popular_movie_id()
+    # for movie_id in top_movie_arr:
+    #     if Movie.objects.filter(imdbID=movie_id).exists():
+    #         movie_data = Movie.objects.get(imdbID=movie_id)
+    #         movie_obj = {
+    #             "Title": movie_data.Title,
+    #             "Poster": movie_data.Poster.url,
+    #             "Year": movie_data.Year,
+    #         }
+    #         top_movie_data.append(movie_obj)
+    #     else:
+    #         url = "http://www.omdbapi.com/?apikey=266c5967&i=" + movie_id
+    #         response = requests.get(url)
+    #         movie_data = response.json()
+    #         top_movie_data.append(movie_data)
 
     template = loader.get_template("homepage.html")
 

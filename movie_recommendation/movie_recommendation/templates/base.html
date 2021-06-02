@@ -16,12 +16,9 @@
 
 
 <!-- Dropdown Structure -->
-<ul id="dropdown1" class="dropdown-content" style="margin-top: 64px !important;">
+<ul id="dropdown1" class="dropdown-content" style="margin-top: 64px !important">
   {% if user.is_authenticated %}
     <li><a class='header-text' href="{% url 'profile' user.username %}">Profile</a></li>
-    <li><a class='header-text' href="{% url 'change-password' %}">Change Password</a></li>
-    <li><a class='header-text' href="{% url 'my-recommendation' %}">My Recommendation</a></li>
-    <li class="divider"></li>
     <li><a class='header-text' href="{% url 'logout' %}">Log out</a></li>
   {% endif %}
 </ul> 

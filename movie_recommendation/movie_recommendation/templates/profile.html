@@ -2,93 +2,129 @@
 
 <!--   Icon Section   -->
 <div class="row">
-  <div class="col s12 m12">
-    <div class="card">
-      <div class="card-image">
-        <img src="{% static 'img/icons/banner.jpg' %}" />
-
+  <div class="col s4">
+    <div class="profile-container">
+      <div class="avatar-container">
         {% if profile.avatar %}
-        <img id="img-custom-circle-actor" src="{{ profile.avatar.url }}" />
+        <img class='avatar-style' src="{{ profile.avatar.url }}" />
         {% else %}
         <img
-          id="img-custom-circle-actor"
+          class='avatar-style'
           src="{% static 'img/no_avatar.jpg' %}"
         />
         {% endif %}
 
-        <span style="font-size: 40px" class="card-title">
-          <b>{{ profile.user.first_name }} {{ profile.user.last_name }}</b>
-        </span>
       </div>
+      <div class='avatar-name white-text center-align'>
+        <b>{{ profile.user.first_name }} {{ profile.user.last_name }}</b>
+      </div>
+      <div class='ruler' style="width:100%; margin-top:16px;"></div>
+      <div >
+        <div class='title-avatar-info'>
+          Account details
+        </div>
+        <div style="margin-left:8px; display:flex;align-items: center;">
+          <p style="padding-right:6px;">
+            <a href="{% url 'profile-reviewed-list' profile.user.username %}">
+              <b> Reviewed Movies</b>
+            </a>
+          </p>
+          <p class="center-align white-text"><b> : {{ m_reviewed_count }}</b></p>
+        </div>
+        <div style="margin-left:8px; display:flex;align-items: center;">
+          <p style="padding-right:6px;">
+            <a href="{% url 'profile-watch-list' profile.user.username %}">
+              <b> WatchList Movies</b>
+            </a>
+          </p>
+          <p class="center-align white-text"><b> : {{ watch_list_count }}</b></p>
+        </div>
+      </div>
+      <div class='ruler' style="width:100%; margin-top:16px;"></div>
+      <div >
+        <div class='title-avatar-info'>
+          Others
+        </div>
+        <div style="margin-left:8px; display:flex;align-items: center;">
+          <p style="padding-right:6px;">
+            <a href="{% url 'change-password' %}">
+              <b>Change Password</b>
+            </a>
+          </p>
+        </div>
+        <div style="margin-left:8px; display:flex;align-items: center;">
+          <p style="padding-right:6px;">
+            <a href="{% url 'edit-profile' %}">
+              <b>Edit Profile</b>
+            </a>
+          </p>
+        </div>
+        <div style="margin-left:8px; display:flex;align-items: center;">
+          <p style="padding-right:6px;">
+            <a href="{% url 'my-recommendation' %}">
+              <b>My Recommendation</b>
+            </a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
 
-      <div class="card-content">
-        <div class="row">
-          <div class="col s12 m8">
-            <ul class="collection">
-              <li class="collection-item avatar">
-                <i class="material-icons circle orange">rate_review</i>
-                <span class="title">Movies Reviewed</span>
-                <p class="center-align"><b>{{ m_reviewed_count }}</b></p>
-                <a
-                  href="{% url 'profile-reviewed-list' profile.user.username %}"
-                  class="secondary-content"
-                  ><b>Show list</b></a
-                >
-              </li>
-            </ul>
+  <div class='col s8'>
+    <div class="profile-movie">
+      {% if list_title %}
+      <h4 class="white-text">{{ list_title }}</h4>
+      <div class="ruler"></div>
+    
+      <div class="row">
+        {% for movie in movie_data %}
+        <div class="col s12 m4">
+          <div class="card card-style">
+            <div class="card-overlay">
+              <div class="card-image-movie">
+                {% if movie.Poster == 'N/A' %}
+                <a href="{% url 'movie-details' movie.imdbID%}"
+                  ><img
+                    class="card-image-movie"
+                    src="{% static 'img/no_poster.jpg' %}"
+                /></a>
+                {% else %}
+                <a href="{% url 'movie-details' movie.imdbID%}"
+                  ><img class="card-image-movie" src="{{ movie.Poster }}"
+                /></a>
+                {% endif %}
+              </div>
+            </div>
+            <div class="card-content-search-page" style='display:flex;flex-direction: column;align-items: center;'>
+              <div style="display:flex;align-items:center">
+                <img style="width:20px;height:auto" src="{% static 'img/icons/star.png' %}"/> 
+                <p class='white-text' style="font-size:24px">{{ movie.user_rated }}/10 IMDB</p>
+              </div> 
+            </div>
           </div>
         </div>
+        {% endfor %}
       </div>
+    
+      {% if movie_data.has_previous %}
+      <a
+        href="?page={{ movie_data.previous_page_number }}"
+        class="waves-effect waves-light btn"
+        ><i class="material-icons left">arrow_back</i>Back</a
+      >
+      {% endif %} {% if movie_data.has_next %}
+      <a
+        href="?page={{ movie_data.next_page_number }}"
+        class="waves-effect waves-light btn"
+        ><i class="material-icons left">add</i>Load more</a
+      >
+      {% endif %} {% endif %}
     </div>
+
   </div>
 
-  {% if list_title %}
-  <h4 class="orange-text">{{ list_title }}:</h4>
-  <div class="divider"></div>
 
-  <div class="row">
-    {% for movie in movie_data %}
-    <div class="col s12 m4">
-      <div class="card card-style">
-        <div class="card-image-movie">
-          {% if movie.Poster == 'N/A' %}
-          <a href="{% url 'movie-details' movie.imdbID%}"
-            ><img
-              class="card-image-movie"
-              src="{% static 'img/no_poster.jpg' %}"
-          /></a>
-          {% else %}
-          <a href="{% url 'movie-details' movie.imdbID%}"
-            ><img class="card-image-movie" src="{{ movie.Poster }}"
-          /></a>
-          {% endif %}
-        </div>
-        <div class="card-content-home-page">
-          <span class="card-title"><b>{{ movie.Title }}</b></span>
-          <span style="display: flex; align-items: center"
-            ><i class="material-icons">date_range</i>{{ movie.Year }}</span
-          >
-          <span class="card-title"><b>User-rated : {{ movie.user_rated }}</b></span>
-
-        </div>
-      </div>
-    </div>
-    {% endfor %}
-  </div>
-
-  {% if movie_data.has_previous %}
-  <a
-    href="?page={{ movie_data.previous_page_number }}"
-    class="waves-effect waves-light btn"
-    ><i class="material-icons left">arrow_back</i>Back</a
-  >
-  {% endif %} {% if movie_data.has_next %}
-  <a
-    href="?page={{ movie_data.next_page_number }}"
-    class="waves-effect waves-light btn"
-    ><i class="material-icons left">add</i>Load more</a
-  >
-  {% endif %} {% endif %}
+  
 </div>
 
 {% endblock %}

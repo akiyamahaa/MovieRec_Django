@@ -20,7 +20,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
-from user.views import UserProfile, UserListReviewed
+from user.views import UserProfile, UserListReviewed,UserProfileWatchList
 from movie.views import get_my_recommendation, home_page
 
 urlpatterns = [
@@ -31,5 +31,6 @@ urlpatterns = [
     path('profile/<username>',UserProfile,name='profile'),
     path('upload-csv/',rating_upload,name='rating_upload'),
     path('<username>/reviewed', UserListReviewed, name='profile-reviewed-list'),
+    path('<username>/watchlist', UserProfileWatchList, name='profile-watch-list'),
     path('recommendation',get_my_recommendation,name='my-recommendation')
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

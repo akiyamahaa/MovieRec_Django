@@ -83,45 +83,53 @@
               {% endif %} 
             {% endfor %} 
           {% else %}
+
+            {% for movie in movie_data.Ratings %} 
+                {% if movie.Source == 'Internet Movie Database' %}
+                  <li class="rating-type">
+                    <img
+                      src="{% static 'img/icons/imdb_icon.png' %}"
+                      alt=""
+                      class="circle"
+                      style="height:40px;width: 50px;"
+                    />
+                    <div class='text-rating'>
+                      <span class="title text-style">{{ movie.Source }}</span>
+                      <p class='text-style'><b>{{ movie.Value }}</b></p>
+                    </div>
+                  </li>
+                {% elif movie.Source == 'Rotten Tomatoes' %}
+                  <li class="rating-type">
+                    <img
+                      src="{% static 'img/icons/rt_icon.png' %}"
+                      alt=""
+                      class="circle"
+                      style="height:40px;width: 50px;"
+
+                    />
+                    <div class='text-rating'>
+                      <span class="title text-style">{{ movie.Source }}</span>
+                      <p class='text-style'><b>{{ movie.Value }}</b></p>
+                    </div>
+                  </li>
+                {% else %}
+                  <li class="rating-type">
+                    <img
+                      src="{% static 'img/icons/meta_icon.png' %}"
+                      alt=""
+                      class="circle"
+                      style="height:40px;width: 50px;"
+
+                    />
+                    <div class='text-rating'>
+                      <span class="title text-style">{{ movie.Source }}</span>
+                      <p class='text-style'><b>{{ movie.Value }}</b></p>
+                    </div>
+                  </li>
+                {% endif %} 
+              {% endfor %} 
   
-          <li class="rating-type">
-            <img
-              src="{% static 'img/icons/imdb_icon.png' %}"
-              alt=""
-              class="circle"
-              style="height:40px;width: 50px;"
-            />
-            <div class='text-rating'>
-              <span class="title white-text">{{ movie.source }}</span>
-              <p class='white-text'><b>{{ movie.rating }}</b></p>
-            </div>
-          </li>
-  
-          <li class="rating-type">
-            <img
-              src="{% static 'img/icons/rt_icon.png' %}"
-              alt=""
-              class="circle"
-              style="height:40px;width: 50px;"
-            />
-            <div class='text-rating'>
-              <span class="title white-text">{{ movie.source }}</span>
-              <p class='white-text'><b>{{ movie.rating }}</b></p>
-            </div>
-          </li>
-  
-          <li class="rating-type">
-            <img
-              src="{% static 'img/icons/meta_icon.png' %}"
-              alt=""
-              class="circle"
-              style="height:40px;width: 50px;"
-            />
-            <div class='text-rating'>
-              <span class="title white-text">{{ movie.source }}</span>
-              <p class='white-text'><b>{{ movie.rating }}</b></p>
-            </div>
-          </li>
+      
           {% endif %}
         </div>
       </div>
@@ -129,7 +137,7 @@
       <div class='overview'>
         <h5 class='white-text'>OVERVIEW:</h5>
         <div>
-          <p style="color:#4f5b68">{{ movie_data.Plot }}</p>
+          <p class='text-style'>{{ movie_data.Plot }}</p>
           <div class="text-style">Runtime: <b>{{ movie_data.Runtime }}</b></div>
           {% if exists_db is True %}
           <div class="text-style">

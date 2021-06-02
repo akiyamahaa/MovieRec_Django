@@ -1,17 +1,11 @@
 {% extends 'base.html' %} 
 {% load static %} 
-{% block banner %}
-<div id="index-banner">
-  <div class="section no-pad-bot">
-    <div class="container">
-      <h2 class="header orange-text">My Recommendation</h2>
-    </div>
-  </div>
-</div>
-{% endblock %} 
+
 {% block content %}
 <!--   Icon Section   -->
-<div class="row">
+<div class="row movie-container">
+  <p class="header-text-home-page white-text">My Recommendation</p>
+  <div class='ruler'></div>
   {% for movie in movie_data %}
   <div class="col s12 l4 m6 xl3">
     <div class="card card-style">

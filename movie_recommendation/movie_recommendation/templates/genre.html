@@ -1,50 +1,50 @@
-{% extends 'base.html' %} {% load static %} {% block banner %}
+{% extends 'base.html' %} {% load static %} 
 
-<div id="index-banner">
-  <div class="section no-pad-bot">
-    <div class="container center-align">
-      <h1 class="header orange-text">#{{ genre }}</h1>
-    </div>
-  </div>
-</div>
 
-{% endblock %} {% block content %}
+{% block content %}
 <!--   Icon Section   -->
-<div class="row">
+<div class="row movie-container">
+  <p class="header-text-home-page white-text">SEARCH BY GENRE: <span style="text-transform:uppercase">{{ genre }}</span></p>
+  <div class='ruler'></div>
   {% for movie in movie_data %}
-  <div class="col s12 m4">
-    <div class="card">
-      <div class="card-image">
+  <div class="col s12">
+    <div class="card card-homepage-style">
+      <div class="card-image-container">
+        {% if movie.Poster == 'N/A' %}
         <a href="{% url 'movie-details' movie.imdbID%}"
-          ><img src="{{ movie.Poster.url }}"
+          ><img class="card-image-homepage" src="{% static 'img/no_poster.jpg' %}"
         /></a>
+        {% else %}
+        <a href="{% url 'movie-details' movie.imdbID%}"
+          ><img class="card-image-homepage" src="{{ movie.Poster.url }}"
+        /></a>
+        {% endif %}
       </div>
-      <div class="card-content">
-        <span class="card-title"><b>{{ movie.Title }}</b></span>
-        <span class="right"
-          ><i class="material-icons">date_range</i>{{ movie.Year }}</span
-        >
-        <p><b>{{ movie.Type }}</b></p>
+      <div class="card-content-home-page">
+        <h2 class="card-title white-text">{{ movie.Title }}</h2>
+        <div style="display:flex;align-items:center">
+          <img style="width:20px;height:auto" src="{% static 'img/icons/star.png' %}"/> 
+          <p class='text-home'>{{ movie.imdbRating }}/10 IMDB</p>
+        </div> 
+        <p class='text-home'>{{ movie.Plot }}</p>    
+        <div style="display:flex;align-items:center">
+          <p class='text-home'>Runtime:  {{ movie.Runtime }}</p>
+          <p class='text-home' style="margin-left:24px">Released:  {{ movie.Released }}</p>
+        </div> 
+        <div class="text-home">
+          Actors: {% for actor in movie.Actors.all %}
+           <a href="{{ actor.get_absolute_url }}">{{ actor }}</a>, 
+          {% endfor %}
+        </div>
+        <div class="text-home">
+          Director: <b>{{ movie.Director }}</b>
+        </div>
+
       </div>
     </div>
   </div>
   {% endfor %}
-
-  <div class="col s12 m12 center-align">
-    {% if movie_data.has_previous %}
-    <a
-      href="?page={{ movie_data.previous_page_number }}"
-      class="waves-effect waves-light btn"
-      ><i class="material-icons left">arrow_back</i>Back</a
-    >
-    {% endif %} 
-    {% if movie_data.has_next %}
-    <a
-      href="?page={{ movie_data.next_page_number }}"
-      class="waves-effect waves-light btn"
-      ><i class="material-icons left">add</i>Load more
-    </a>
-    {% endif %}
-  </div>
 </div>
+
 {% endblock %}
+

@@ -5,7 +5,7 @@
  *
  * Made By MaterializeCSS.com
  */
-body{
+body {
   background-image: url('../img/bg.jpg');
 }
 
@@ -32,8 +32,8 @@ p {
   width: 100%;
 }
 
-.group-flex{
-  display:flex;
+.group-flex {
+  display: flex;
   justify-content: center;
   align-items: center;
 }
@@ -73,88 +73,143 @@ p {
   left: 35%;
   top: 20%;
 }
+/* Login html */
+.login-container {
+  background-color: #DCE5F4;
+  border-radius:10px;
+  margin-top: 150px;
+  width: 40%;
+  padding-left:20px;
+  padding-right:20px;
+  padding-top:20px;
+  padding-bottom:40px
+}
+/* SIGN UP html */
+.signup-container{
+  background-color: #DCE5F4;
+  border-radius:10px;
+  margin-top: 150px;
+  width: 40%;
+  padding-left:20px;
+  padding-right:20px;
+  padding-top:20px;
+  padding-bottom:40px
+}
 
 /* base html */
-.header-style{
+.header-style {
   position: fixed;
   z-index: 1000;
   background-color: #191919;
   height: 64px;
   top: 0px;
-  left:0px;
-  right:0px;
+  left: 0px;
+  right: 0px;
 }
 
-.header-text{
-  color:#abb7c4
+.header-text {
+  color: #abb7c4;
 }
-.header-icon-style{
+.header-icon-style {
   height: auto;
   width: 64px;
 }
 
-.group-right{
+.group-right {
   display: flex;
   align-items: center;
 }
-.sign-up-button{
-  border-radius:10px;
-  height:40px;
-  display:flex;
+.sign-up-button {
+  border-radius: 10px;
+  height: 40px;
+  display: flex;
   align-items: center;
   justify-content: center;
-  color:white
+  color: white;
 }
 
 /* Home Page */
-.input-container{
-  background-color:#233a50 !important;
+.input-container {
+  background-color: #233a50 !important;
   width: 100%;
   height: 50px;
   border: 4px solid #020d18;
   border-radius: 3px;
 }
-.input-style{
-  color:#abb7c4
+.input-style {
+  color: #abb7c4 !important;
 }
 
-
+.movie-container{
+  border-radius:10px;
+  background-color: #020d18;
+  padding-top:10px;
+  padding-left:20px;
+  padding-right:20px;
+}
+.header-text-home-page{
+  font-size: 32px;
+}
+.card-homepage-style{
+  display:flex;
+  height: 400px;
+  border-radius: 10px;
+}
+.card-image-container{
+  height: 100%;
+  background-color: #020d18;
+  width:30%;
+}
+.card-image-homepage{
+  height: 100%;
+  width: 300px;
+  border-radius:10px;
+}
+.card-content-home-page{
+  width:70%;
+  background-color: #020d18;
+}
+.text-home {
+  margin: 8px;
+  color: #4f5b68;
+  font-size:16px;
+  line-height:20px;
+}
 
 /* Search Results */
-.search-text-style{
-  color:white;
+.search-text-style {
+  color: white;
   font-size: 24px;
   text-transform: uppercase;
 }
 
 .card-style {
   height: 400px;
-  border-radius:10px;
+  border-radius: 10px;
 }
 .card-image-movie {
-  border-radius:10px;
+  border-radius: 10px;
   height: 400px;
-  width:100%
+  width: 100%;
 }
-.card-content-home-page {
+.card-content-search-page {
   position: absolute;
   bottom: 0;
   width: 100%;
   text-align: center;
-  margin-bottom:20px;
+  margin-bottom: 20px;
   font-size: 14px;
 }
 .card-overlay {
   filter: brightness(0.7);
 }
 
-.title-card{
-  color:white;
+.title-card {
+  color: white;
   text-transform: uppercase;
-  margin:8px
+  margin: 8px;
 }
 
- 
 /* Movie_details */
 
 .movie-img {
@@ -167,43 +222,45 @@ p {
   width: 100%;
   border-radius: 10px;
 }
-.movie-btn-container{
-  padding:16px;
+.movie-btn-container {
+  padding: 16px;
   border: 0.5px white;
 }
-.movie-btn{
-  width:80%;
-  border-radius:6px;
-  display:flex;
-  margin-bottom:12px;
+.movie-btn {
+  width: 80%;
+  border-radius: 6px;
+  display: flex;
+  margin-bottom: 12px;
 }
 
-.movie-details{
+.movie-details {
   padding: 12px;
 }
 
-.rating-container{
+.rating-container {
   width: 100%;
 }
-.rating-type{
-  display:flex;
+.rating-type {
+  display: flex;
   align-items: center;
 }
-.text-rating{
-  padding-left:20px;
-  color:white
+.text-rating {
+  padding-left: 20px;
+  color: white;
 }
-.text-year{
-  color:#4f5b68;
+.text-year {
+  color: #4f5b68;
   font-size: 24px;
 }
 
-.ruler{
-  border:1px solid #405266;
+.ruler {
+  border: 1px solid #405266;
 }
 .text-style {
   margin: 8px;
-  color:#4f5b68;
+  color: #4f5b68;
+  font-size:16px;
+  line-height:20px;
 }
 .card-item {
   margin: 16px;
@@ -213,3 +270,35 @@ p {
 }
 
 
+/* Profile HTML */
+
+.profile-container{
+  background-color: #020d18;
+  padding:20px;
+  border-radius: 10px;
+}
+.avatar-container{
+  display:flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.avatar-name{
+  font-size:20px
+}
+
+.avatar-style{
+  border-radius: 1000px;
+  width: 200px;
+  height: auto;
+}
+.title-avatar-info{
+  color: #4f5b68;
+  font-size: 24px;
+}
+
+.profile-movie{
+  background-color: #020d18;
+  padding:20px;
+  border-radius: 10px;
+}

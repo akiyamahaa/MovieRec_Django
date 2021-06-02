@@ -86,11 +86,13 @@ def UserProfile(request,username):
 	user = get_object_or_404(User,username=username)
 	profile = Profile.objects.get(user=user)
 	m_reviewed_count = ReviewRating.objects.filter(user=user).count()
-
+	watch_list_count = profile.to_watch.all().count()
 
 	context ={
 		'profile': profile,
 		'm_reviewed_count': m_reviewed_count,
+		'watch_list_count': watch_list_count,
+
 	}
 
 	template = loader.get_template('profile.html')
@@ -103,10 +105,15 @@ def UserListReviewed(request,username):
 	profile = Profile.objects.get(user=user)
 
 	m_reviewed_count = ReviewRating.objects.filter(user=user).count()
+	watch_list_count = profile.to_watch.all().count()
+
 	movie_reviewed_list = []
 	movies = ReviewRating.objects.filter(user=user)
+	movie_data = []
+
 
 	for movie in movies:
+		print('movie===',movie)
 		if Movie.objects.filter(imdbID=movie.movie_id).exists():
 			movie_data = Movie.objects.get(imdbID=movie.movie_id)
 			movie_obj = {
@@ -117,21 +124,49 @@ def UserListReviewed(request,username):
 				'user_rated': movie.rate
 			}
 			movie_reviewed_list.append(movie_obj)
-		else:
-			url = 'http://www.omdbapi.com/?apikey=266c5967&i=' + movie.movie_id
-			response = requests.get(url)
-			movie_data = response.json()
-			movie_data.user_rated = movie.rate
-			movie_reviewed_list.append(movie_data)
+		# else:
+		# 	url = 'http://www.omdbapi.com/?apikey=266c5967&i=' + movie.movie_id
+		# 	response = request.get(url)
+		# 	movie_data = response.json()
+		# 	movie_data.user_rated = movie.rate
+		# 	movie_reviewed_list.append(movie_data)
 
 	paginator = Paginator(movie_reviewed_list, 8)
 	page_number = request.GET.get('page')
 	movie_data = paginator.get_page(page_number)
 	context ={
 		'profile': profile,
+		'watch_list_count': watch_list_count,
 		'm_reviewed_count': m_reviewed_count,
 		'movie_data': movie_data,
 		'list_title': 'Movie Reviewed',
+	}
+
+	template = loader.get_template('profile.html')
+
+	return HttpResponse(template.render(context, request))
+
+def UserProfileWatchList(request, username):
+	user = get_object_or_404(User, username=username)
+	profile = Profile.objects.get(user=user)
+
+	#MovieBoxData
+	watch_list_count = profile.to_watch.all().count()
+	m_reviewed_count = ReviewRating.objects.filter(user=user).count()
+
+	#Movies List
+	movies = profile.to_watch.all()
+	paginator = Paginator(movies, 9)
+	page_number = request.GET.get('page')
+	movie_data = paginator.get_page(page_number)
+
+
+	context = {
+		'profile': profile,
+		'watch_list_count': watch_list_count,
+		'm_reviewed_count': m_reviewed_count,
+		'movie_data': movie_data,
+		'list_title': 'Watch List',
 	}
 
 	template = loader.get_template('profile.html')

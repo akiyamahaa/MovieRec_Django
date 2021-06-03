@@ -241,8 +241,13 @@ def search_by_actors(request, actor_slug):
 def Rate(request, imdb_id):
     movie = Movie.objects.get(imdbID=imdb_id)
     user = request.user
+    profile = Profile.objects.get(user=user)
     user_exist = ReviewRating.objects.filter(user=user)
     movie_exist = ReviewRating.objects.filter(movie_id=imdb_id)
+    # Remove movie from watch-list
+    if profile.to_watch.filter(imdbID=imdb_id).exists():
+        profile.to_watch.remove(movie)      
+
     user_count = len(
         ReviewRating.objects.values("idx_user").annotate(
             Count("idx_user", distinct=True)

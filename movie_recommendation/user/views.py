@@ -127,12 +127,12 @@ def UserListReviewed(request,username):
 				'user_rated': movie.rate
 			}
 			movie_reviewed_list.append(movie_obj)
-		else:
-			url = 'http://www.omdbapi.com/?apikey=266c5967&i=' + movie.movie_id
-			response = requests.get(url)
-			movie_data = response.json()
-			movie_data['user_rated'] = movie.rate
-			movie_reviewed_list.append(movie_data)
+		# else:
+		# 	url = 'http://www.omdbapi.com/?apikey=266c5967&i=' + movie.movie_id
+		# 	response = requests.get(url)
+		# 	movie_data = response.json()
+		# 	movie_data['user_rated'] = movie.rate
+		# 	movie_reviewed_list.append(movie_data)
 
 	paginator = Paginator(movie_reviewed_list, 8)
 	page_number = request.GET.get('page')

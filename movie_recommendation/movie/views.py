@@ -295,6 +295,7 @@ def Rate(request, imdb_id):
 def addMoviesToWatch(request, imdb_id):
     movie = Movie.objects.get(imdbID=imdb_id)
     user = request.user
+    m_reviewed = ReviewRating.objects.filter(user=user)
     profile = Profile.objects.get(user=user)
 
     profile.to_watch.add(movie)
@@ -339,7 +340,7 @@ def rating_download(request):
     response['Content-Disposition'] = 'attachment; filename="ratings.csv"'
 
     writer = csv.writer(response,delimiter=',')
-    writer.writerow(['idx_user','idx_movie','rate','raw_user','raw_movie'])
+    writer.writerow(['uid','mid','rating','raw_user','raw_movie'])
 
     for obj in ratings:
         writer.writerow([obj.idx_user,obj.idx_movie,obj.rate,obj.user,obj.movie_id])
@@ -359,11 +360,17 @@ def get_glob_mean():
             glob_mean = row[0]
     return float(glob_mean)
 
+def round_rating(rating):
+    if rating > 0:
+        return min(np.round(rating,4),10)
+    else: 
+        return 0    
+
 def get_movie_rec_id_and_pred(predictions,k=10):
     recommended_book_ids = (-predictions).argsort()[:k]
     dict_raw_mid = {}
     for mid in recommended_book_ids:
-        dict_raw_mid[get_raw_mid(mid)] = predictions[mid]
+        dict_raw_mid[get_raw_mid(mid)] = round_rating(predictions[mid])
     return dict_raw_mid
 
 @login_required(login_url="/account/login")
@@ -371,9 +378,9 @@ def get_my_recommendation(request):
     model_path = settings.MODEL_ROOT + "/MF_keras.h5"
     model_keras = tf.keras.models.load_model(model_path)
     user = request.user
-    idx_user = int(ReviewRating.objects.filter(user=user)[0].idx_user)
+    idx_user = ReviewRating.objects.filter(user=user)[0].idx_user
 
-    glob_mean = 6.935751112458413
+    glob_mean = get_glob_mean()
 
     top_movie_data = []
     
@@ -387,7 +394,6 @@ def get_my_recommendation(request):
     for i in mid_predicted:
         mid_not_predicted = np.delete(
             mid_not_predicted, np.where(mid_not_predicted == i))
-    mid_not_predicted = mid_not_predicted.astype(int)
     usr_arr = np.array([idx_user for i in range(len(mid_not_predicted))])
     predictions = model_keras.predict([usr_arr, mid_not_predicted])
     predictions += glob_mean
@@ -398,9 +404,7 @@ def get_my_recommendation(request):
         if Movie.objects.filter(imdbID=movie_id).exists():
             movie_data = Movie.objects.get(imdbID=movie_id)
             movie_obj = {
-                'Title': movie_data.Title,
                 'Poster': movie_data.Poster.url,
-                'Year': movie_data.Year,
                 'predict_score':predict_score 
             }
             top_movie_data.append(movie_obj)

@@ -13,7 +13,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from movie.views import rating_upload
+from movie.views import rating_upload, rating_download
 from django.contrib import admin
 from django.urls import path, include
 
@@ -30,6 +30,7 @@ urlpatterns = [
     path('account/',include('user.urls')),  
     path('profile/<username>',UserProfile,name='profile'),
     path('upload-csv/',rating_upload,name='rating_upload'),
+    path('download-csv/',rating_download,name='rating_download'),
     path('<username>/reviewed', UserListReviewed, name='profile-reviewed-list'),
     path('<username>/watchlist', UserProfileWatchList, name='profile-watch-list'),
     path('recommendation',get_my_recommendation,name='my-recommendation')

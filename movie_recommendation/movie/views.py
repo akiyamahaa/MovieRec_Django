@@ -291,7 +291,7 @@ def Rate(request, imdb_id):
 
     return HttpResponse(template.render(context, request))
 
-
+@login_required(login_url="/account/login")
 def addMoviesToWatch(request, imdb_id):
     movie = Movie.objects.get(imdbID=imdb_id)
     user = request.user
@@ -301,6 +301,7 @@ def addMoviesToWatch(request, imdb_id):
 
     return HttpResponseRedirect(reverse('movie-details', args=[imdb_id]))
 
+# IMPORT & EXPORT CSV
 def rating_upload(request):
     template = loader.get_template("rating_upload.html")
     prompt = {"order": "order of the CSV is idx_user,idx_movie,rating,user,movie_id"}
@@ -331,9 +332,32 @@ def rating_upload(request):
     context = {}
     return HttpResponse(template.render(context, request))
 
+def rating_download(request):
+    ratings = ReviewRating.objects.all()
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="ratings.csv"'
+
+    writer = csv.writer(response,delimiter=',')
+    writer.writerow(['idx_user','idx_movie','rate','raw_user','raw_movie'])
+
+    for obj in ratings:
+        writer.writerow([obj.idx_user,obj.idx_movie,obj.rate,obj.user,obj.movie_id])
+
+    return response
+
 # RECOMMENDATION
 def get_raw_mid(mid):
     return ReviewRating.objects.filter(idx_movie=mid)[0].movie_id
+
+def get_glob_mean():
+    glob_mean_path = settings.MODEL_ROOT + "/glob_mean.csv"
+    glob_mean = 0
+    with open(glob_mean_path) as csv_file:
+        csv_reader = csv.reader(csv_file, delimiter=',')
+        for row in csv_reader:
+            glob_mean = row[0]
+    return float(glob_mean)
 
 def get_movie_rec_id_and_pred(predictions,k=10):
     recommended_book_ids = (-predictions).argsort()[:k]

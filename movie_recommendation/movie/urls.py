@@ -1,5 +1,5 @@
 from django.urls import path
-from movie.views import home_page,pagination, movie_details,Rate, search_by_genres, search_by_actors,addMoviesToWatch
+from movie.views import pagination, movie_details,Rate, search_by_genres, search_by_actors,addMoviesToWatch
 
 urlpatterns = [
   path('search/<query>/page/<page_number>',pagination,name='pagination'),

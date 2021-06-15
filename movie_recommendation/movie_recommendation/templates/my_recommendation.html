@@ -3,40 +3,53 @@
 <div class="row movie-container">
   <p class="header-text-home-page white-text">My Recommendation</p>
   <div class="ruler"></div>
-  {% for movie in movie_data %}
-  <div class="col s12 l4 m6 xl3">
-    <div class="card card-style">
-      <div class="card-overlay">
-        <div class="card-image-movie">
+  {% if info != '' %}
+  <p style="font-size:24px;color: #4f5b68;">{{ info }}</p>
+
+  {% else %}
+    {% for movie in movie_data %}
+    <div class="col s12">
+      <div class="card card-homepage-style">
+        <div class="card-image-container">
           {% if movie.Poster == 'N/A' %}
           <a href="{% url 'movie-details' movie.imdbID%}"
-            ><img
-              class="card-image-movie"
-              src="{% static 'img/no_poster.jpg' %}"
+            ><img class="card-image-homepage" src="{% static 'img/no_poster.jpg' %}"
           /></a>
           {% else %}
           <a href="{% url 'movie-details' movie.imdbID%}"
-            ><img class="card-image-movie" src="{{ movie.Poster }}"
+            ><img class="card-image-homepage" src="{{ movie.Poster }}"
           /></a>
           {% endif %}
         </div>
-      </div>
-      <div
-        class="card-content-search-page"
-        style="display: flex; flex-direction: column; align-items: center"
-      >
-        <div style="display: flex; align-items: center">
-          <img
-            style="width: 20px; height: auto"
-            src="{% static 'img/icons/star.png' %}"
-          />
-          <p class="white-text" style="font-size: 24px">
-            {{ movie.predict_score }}/10
-          </p>
+        <div class="card-content-home-page">
+          <h2 class="card-title white-text">{{ movie.Title }}</h2>
+          <div style="display:flex;align-items:center">
+            <p class="card-title white-text"><b>Top {{ forloop.counter }} : </b></p>
+            <p class='white-text' style="margin-left:6px;font-size: 24px;"> {{ movie.predict_score }}/10 </p>
+            <img style="width:30px;height:auto;margin-left:4px" src="{% static 'img/icons/star.png' %}"/> 
+          </div> 
+          <p class='text-home'>{{ movie.Plot }}</p>    
+          <div style="display:flex;align-items:center">
+            <p class='text-home'>Runtime:  {{ movie.Runtime }}</p>
+            <p class='text-home' style="margin-left:24px">Released:  {{ movie.Released }}</p>
+          </div> 
+          {% if exists_db is True %}
+          <div class="text-home">
+            Actors: {% for actor in movie.Actors.all %}
+             <a href="{{ actor.get_absolute_url }}">{{ actor }}</a>, 
+            {% endfor %}
+          </div>
+          {% else %}
+          <div class="text-home">Actors: <b>{{ movie.Actors }}</b></div>
+          {% endif %}
+          <div class="text-home">
+            Director: <b>{{ movie.Director }}</b>
+          </div>
+  
         </div>
       </div>
     </div>
-  </div>
-  {% endfor %}
+    {% endfor %}
+  {% endif %}
 </div>
 {% endblock %}

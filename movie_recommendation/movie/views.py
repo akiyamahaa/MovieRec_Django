@@ -23,6 +23,7 @@ import random
 
 # Create your views here.
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import logout
 
 
 def get_popular_movie_id():
@@ -33,10 +34,16 @@ def get_popular_movie_id():
         for row in csv_reader:
             top_movie_id.append(row[0])
 
-    return random.choices(top_movie_id, k=10)
+    return random.choices(top_movie_id, k=1)
+
+def restrict_admin(request,username):
+    if username == 'admin':
+        logout(request)
 
 
 def home_page(request):
+    user = request.user
+    restrict_admin(request,user.username)
     query = request.GET.get("q")
     if query:
         url = "http://www.omdbapi.com/?apikey=266c5967&s=" + query
@@ -73,6 +80,8 @@ def home_page(request):
 
 
 def pagination(request, query, page_number):
+    user = request.user
+    restrict_admin(request,user.username)
     page_number = int(page_number) + 1
     url = (
         "http://www.omdbapi.com/?apikey=266c5967&s="
@@ -94,6 +103,8 @@ def pagination(request, query, page_number):
 
 
 def movie_details(request, imdb_id):
+    user = request.user
+    restrict_admin(request,user.username)
     if Movie.objects.filter(imdbID=imdb_id).exists():
         movie_data = Movie.objects.get(imdbID=imdb_id)
         exists_db = True
@@ -202,6 +213,8 @@ def movie_details(request, imdb_id):
 
 
 def search_by_genres(request, genre_slug):
+    user = request.user
+    restrict_admin(request,user.username)
     genre = get_object_or_404(Genre, slug=genre_slug)
     movies = Movie.objects.filter(Genre=genre)
 
@@ -220,6 +233,8 @@ def search_by_genres(request, genre_slug):
 
 
 def search_by_actors(request, actor_slug):
+    user = request.user
+    restrict_admin(request,user.username)    
     actor = get_object_or_404(Actor, slug=actor_slug)
     movies = Movie.objects.filter(Actors=actor)
 
@@ -375,6 +390,8 @@ def get_movie_rec_id_and_pred(predictions,k=10):
 
 @login_required(login_url="/account/login")
 def get_my_recommendation(request):
+    user = request.user
+    restrict_admin(request,user.username)
     model_path = settings.MODEL_ROOT + "/MF_keras.h5"
     model_keras = tf.keras.models.load_model(model_path)
     user = request.user
@@ -405,7 +422,6 @@ def get_my_recommendation(request):
             predictions += glob_mean
             predictions = np.array([a[0] for a in predictions])
             my_recommendation = get_movie_rec_id_and_pred(predictions)
-            print(my_recommendation)
             
             for movie_id,predict_score in my_recommendation.items():
                 if Movie.objects.filter(imdbID=movie_id).exists():

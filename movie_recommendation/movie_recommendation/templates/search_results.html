@@ -11,7 +11,10 @@
 </div>
 {% endblock %} {% block content %}
 <!--   Icon Section   -->
-<div class="row">
+<div class="row movie-container">
+  {% if info != '' %}
+  <p class="header-text-home-page" style="font-size:24px;color: #4f5b68;">{{ info }}</p>
+  {% endif %}
   {% for movie in movie_data.Search %}
   <div class="col s3">
     <div class="card card-style">
@@ -36,7 +39,7 @@
     </div>
   </div>
   {% endfor %}
-
+  {% if info == '' %}
   <div class="col s12 m12 center-align">
     <a
       href="{% url 'pagination' query page_number %}"
@@ -45,6 +48,8 @@
     >
     <div></div>
   </div>
+  {% endif %}
+
 </div>
 
 {% endblock %}

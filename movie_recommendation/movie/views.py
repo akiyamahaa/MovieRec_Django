@@ -34,7 +34,7 @@ def get_popular_movie_id():
         for row in csv_reader:
             top_movie_id.append(row[0])
 
-    return random.choices(top_movie_id, k=1)
+    return random.choices(top_movie_id, k=10)
 
 def restrict_admin(request,username):
     if username == 'admin':
@@ -46,11 +46,15 @@ def home_page(request):
     restrict_admin(request,user.username)
     query = request.GET.get("q")
     if query:
+        info = ''
         url = "http://www.omdbapi.com/?apikey=266c5967&s=" + query
         response = requests.get(url)
         movie_data = response.json()
 
-        context = {"query": query, "movie_data": movie_data, "page_number": 1}
+        if 'Error' in movie_data.keys():
+            info = 'No data for search key: ' + query
+
+        context = {"query": query, "movie_data": movie_data, "page_number": 1,'info':info}
 
         template = loader.get_template("search_results.html")
         return HttpResponse(template.render(context, request))
@@ -311,9 +315,13 @@ def addMoviesToWatch(request, imdb_id):
     movie = Movie.objects.get(imdbID=imdb_id)
     user = request.user
     m_reviewed = ReviewRating.objects.filter(user=user)
+            
     profile = Profile.objects.get(user=user)
-
     profile.to_watch.add(movie)
+
+    for each_movie in m_reviewed:
+        if each_movie.movie_id == imdb_id:
+            profile.to_watch.remove(movie)      
 
     return HttpResponseRedirect(reverse('movie-details', args=[imdb_id]))
 
@@ -404,8 +412,6 @@ def get_my_recommendation(request):
         info = 'You need to review more than 10 movies to get recommendation'
     else:
         idx_user = ReviewRating.objects.filter(user=user)[0].idx_user
-        glob_mean = get_glob_mean()
-
         total_mid = ReviewRating.objects.values_list(
             'idx_movie', flat=True).distinct()
         total_mid = np.array(total_mid)
@@ -418,6 +424,7 @@ def get_my_recommendation(request):
                 mid_not_predicted, np.where(mid_not_predicted == i))
         usr_arr = np.array([idx_user for i in range(len(mid_not_predicted))])
         try:
+            glob_mean = get_glob_mean()
             predictions = model_keras.predict([usr_arr, mid_not_predicted])
             predictions += glob_mean
             predictions = np.array([a[0] for a in predictions])

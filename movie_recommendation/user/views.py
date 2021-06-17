@@ -116,23 +116,11 @@ def UserListReviewed(request,username):
 
 
 	for movie in movies:
-		print('movie===',movie)
-		if Movie.objects.filter(imdbID=movie.movie_id).exists():
-			movie_data = Movie.objects.get(imdbID=movie.movie_id)
-			movie_obj = {
-				'Title': movie_data,
-				'Poster': movie_data.Poster.url,
-				'Year': movie_data.Year,
-				'imdbID': movie.movie_id,
-				'user_rated': movie.rate
-			}
-			movie_reviewed_list.append(movie_obj)
-		# else:
-		# 	url = 'http://www.omdbapi.com/?apikey=266c5967&i=' + movie.movie_id
-		# 	response = requests.get(url)
-		# 	movie_data = response.json()
-		# 	movie_data['user_rated'] = movie.rate
-		# 	movie_reviewed_list.append(movie_data)
+		url = 'http://www.omdbapi.com/?apikey=266c5967&i=' + movie.movie_id
+		response = requests.get(url)
+		movie_data = response.json()
+		movie_data['user_rated'] = movie.rate
+		movie_reviewed_list.append(movie_data)
 
 	paginator = Paginator(movie_reviewed_list, 8)
 	page_number = request.GET.get('page')

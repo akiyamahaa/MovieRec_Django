@@ -5,7 +5,6 @@ __pycache__
 */__pycache__/*
 **/__pycache__/*
 
-media
 movie/migrations/*
 user/migrations/*
 

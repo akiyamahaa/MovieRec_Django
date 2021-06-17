@@ -20,7 +20,6 @@ from user.models import Profile
 
 import requests
 import random
-
 # Create your views here.
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
@@ -62,15 +61,6 @@ def home_page(request):
     top_movie_data = []
     top_movie_arr = get_popular_movie_id()
     for movie_id in top_movie_arr:
-        # if Movie.objects.filter(imdbID=movie_id).exists():
-        #     movie_data = Movie.objects.get(imdbID=movie_id)
-        #     movie_obj = {
-        #         "Title": movie_data.Title,
-        #         "Poster": movie_data.Poster.url,
-        #         "Year": movie_data.Year,
-        #     }
-        #     top_movie_data.append(movie_obj)
-        # else:
         url = "http://www.omdbapi.com/?apikey=266c5967&i=" + movie_id
         response = requests.get(url)
         movie_data = response.json()
@@ -359,14 +349,18 @@ def rating_upload(request):
 def rating_download(request):
     ratings = ReviewRating.objects.all()
 
-    response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="ratings.csv"'
+    response = HttpResponse(
+        content_type='text/csv',
+        headers={'Content-Disposition':'attachment; filename="ratings.csv"'}
+    )
 
     writer = csv.writer(response,delimiter=',')
     writer.writerow(['uid','mid','rating','raw_user','raw_movie'])
-
+    print("Getting Data from db ...")
     for obj in ratings:
         writer.writerow([obj.idx_user,obj.idx_movie,obj.rate,obj.user,obj.movie_id])
+        print(obj)
+    print("Download CSV-file completed")
 
     return response
 
@@ -400,7 +394,7 @@ def get_movie_rec_id_and_pred(predictions,k=10):
 def get_my_recommendation(request):
     user = request.user
     restrict_admin(request,user.username)
-    model_path = settings.MODEL_ROOT + "/MF_keras.h5"
+    model_path = settings.MODEL_ROOT + "/NeuMF.h5"
     model_keras = tf.keras.models.load_model(model_path)
     user = request.user
     info = ''
@@ -412,6 +406,7 @@ def get_my_recommendation(request):
         info = 'You need to review more than 10 movies to get recommendation'
     else:
         idx_user = ReviewRating.objects.filter(user=user)[0].idx_user
+
         total_mid = ReviewRating.objects.values_list(
             'idx_movie', flat=True).distinct()
         total_mid = np.array(total_mid)
@@ -431,23 +426,16 @@ def get_my_recommendation(request):
             my_recommendation = get_movie_rec_id_and_pred(predictions)
             
             for movie_id,predict_score in my_recommendation.items():
-                if Movie.objects.filter(imdbID=movie_id).exists():
-                    movie_data = Movie.objects.get(imdbID=movie_id)
-                    movie_obj = {
-                        'Title': movie_data.Title,
-                        'Poster': movie_data.Poster.url,
-                        'predict_score':predict_score 
-                    }
-                    top_movie_data.append(movie_obj)
-                else:
-                    url = 'http://www.omdbapi.com/?apikey=266c5967&i=' + movie_id
-                    response = requests.get(url)
-                    movie_data = response.json()
-                    movie_data['predict_score'] = predict_score
-                    top_movie_data.append(movie_data)
+                url = 'http://www.omdbapi.com/?apikey=266c5967&i=' + movie_id
+                response = requests.get(url)
+                movie_data = response.json()
+                movie_data['predict_score'] = predict_score
+                top_movie_data.append(movie_data)
         except:
             info = 'You will get recommendation soon'
-            
+    
+    for movie in top_movie_data:
+        print(movie)
 
     template = loader.get_template("my_recommendation.html")
 
